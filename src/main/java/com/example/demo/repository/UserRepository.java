@@ -3,22 +3,26 @@ package com.example.demo.repository;
 import com.example.demo.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-
 public class UserRepository {
     private final JdbcTemplate jdbcTemplate;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserRepository(JdbcTemplate jdbcTemplate) {
+    @Autowired
+    public UserRepository(JdbcTemplate jdbcTemplate, PasswordEncoder passwordEncoder) {
         this.jdbcTemplate = jdbcTemplate;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public int saveUser(User user) {
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
         String sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
-        return jdbcTemplate.update(sql, user.getName(), user.getEmail(), user.getPassword());
+        return jdbcTemplate.update(sql, user.getName(), user.getEmail(), encodedPassword);
     }
 
     public List<String> findAllNames() {
