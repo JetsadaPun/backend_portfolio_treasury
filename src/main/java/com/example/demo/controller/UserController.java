@@ -1,29 +1,17 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.User;
-import com.example.demo.repository.UserRepository;
+import com.example.demo.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-// อย่าลืม import User กับ UserRepository และ JwtUtil
-import com.example.demo.security.JwtUtil;
-import com.example.demo.service.UserService;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Optional;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
-
+@CrossOrigin(origins = "*") // เพิ่มถ้าต้องการให้ frontend เรียกใช้ได้
 public class UserController {
 
     private final UserService userService;
@@ -33,16 +21,23 @@ public class UserController {
     }
 
     @GetMapping
-    public List<String> getUsers() {
-        return userService.getAllUserNames();
+    public ResponseEntity<List<String>> getUsers() {
+        try {
+            List<String> users = userService.getAllUserNames();
+            return ResponseEntity.ok(users);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, String>> register(@RequestBody User user) {
-        Map<String, String> response = userService.register(user);
+    public ResponseEntity<Map<String, Object>> register(@Valid @RequestBody User user) {
+        Map<String, Object> response = userService.register(user);
+
         if (response.containsKey("error")) {
-            return ResponseEntity.status(400).body(response);
+            return ResponseEntity.badRequest().body(response);
         }
+
         return ResponseEntity.ok(response);
     }
 
@@ -54,8 +49,22 @@ public class UserController {
             return ResponseEntity.ok(response);
         } else if ("Invalid password".equals(response.get("error"))) {
             return ResponseEntity.status(401).body(response);
-        } else {
+        } else if ("User not found".equals(response.get("error"))) {
             return ResponseEntity.status(404).body(response);
+        } else {
+            return ResponseEntity.badRequest().body(response);
         }
+    }
+
+    // เพิ่ม endpoint สำหรับดู user profile
+    @GetMapping("/profile/{email}")
+    public ResponseEntity<Map<String, String>> getUserProfile(@PathVariable String email) {
+        return userService.findByEmail(email)
+                .map(user -> ResponseEntity.ok(Map.of(
+                        "id", user.getId(),
+                        "name", user.getName(),
+                        "email", user.getEmail()
+                )))
+                .orElse(ResponseEntity.notFound().build());
     }
 }

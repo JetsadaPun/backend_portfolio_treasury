@@ -25,10 +25,7 @@ public class JwtFilter implements Filter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
-            if (!jwtUtil.validateToken(token)) {
-                ((HttpServletResponse) response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid Token");
-                return;
-            }
+            return;
         }
 
         chain.doFilter(request, response);
