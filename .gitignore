@@ -32,9 +32,7 @@ build/
 ### VS Code ###
 .vscode/
 
-/src/main/resources/.env.env/
-
 # Ignore environment files
 .env
 .env.*
-/src/main/resources/.env
+src/main/resources/.env
