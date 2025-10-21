@@ -8,15 +8,6 @@ CREATE TABLE IF NOT EXISTS users (
     token_id VARCHAR(20)
 );
 
-CREATE TABLE IF NOT EXISTS Date_Token (
-    Token_ID VARCHAR(20),
-    user_id INT,
-    Token VARCHAR(100),
-    Date_start TIME,
-    Date_end TIME,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
-
 CREATE TABLE IF NOT EXISTS oauth_users (
     OAuth_ID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id INT,
@@ -52,4 +43,28 @@ CREATE TABLE IF NOT EXISTS log_user (
     action VARCHAR(100),
     time TIME,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS Subject (
+    Subject_ID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    Subject_name_thai VARCHAR(100),
+    Subject_Name_eng VARCHAR(100),
+    Year INT,
+    Type_Subject VARCHAR(100),
+    Day_Update VARCHAR(100)
+);
+
+CREATE TABLE IF NOT EXISTS post_work (
+     Post_ID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+     Subject_ID INT NOT NULL,
+     Project_Name VARCHAR(255) NOT NULL,
+     Project_Detail TEXT,
+     Project_Image VARCHAR(255),
+     Project_link VARCHAR(255),
+     Project_Docs VARCHAR(255),
+     Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     user_id VARCHAR(36) NOT NULL,
+
+     FOREIGN KEY (Subject_ID) REFERENCES subject(Subject_ID),
+     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );

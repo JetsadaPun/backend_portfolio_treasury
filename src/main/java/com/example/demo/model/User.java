@@ -17,8 +17,7 @@ public class User {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
-    @JdbcTypeCode(SqlTypes.VARCHAR)
-    @Column(name = "user_id", columnDefinition = "CHAR(36)")
+    @Column(name = "user_id", length = 36, updatable = false, nullable = false)
     private String user_id;
 
     @NotBlank(message = "Name is required")

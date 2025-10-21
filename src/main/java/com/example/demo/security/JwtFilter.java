@@ -19,15 +19,32 @@ public class JwtFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-
-        HttpServletRequest httpReq = (HttpServletRequest) request;
-        String authHeader = httpReq.getHeader("Authorization");
-
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
-            return;
-        }
-
         chain.doFilter(request, response);
+//        HttpServletRequest httpReq = (HttpServletRequest) request;
+//        HttpServletResponse httpRes = (HttpServletResponse) response;
+//
+//        String authHeader = httpReq.getHeader("Authorization");
+//
+//        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+//            String token = authHeader.substring(7);
+//
+//            try {
+//                // ตรวจสอบ token ว่ายัง valid อยู่หรือไม่
+//                jwtUtil.extractUsername(token);  // ถ้าไม่ valid จะ throw Exception
+//
+//                // ถ้า valid, ให้ filter ผ่าน
+//                chain.doFilter(request, response);
+//            } catch (Exception e) {
+//                // token ไม่ถูกต้องหรือหมดอายุ
+//                httpRes.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//                httpRes.getWriter().write("{\"error\":\"Invalid or expired token\"}");
+//                httpRes.getWriter().flush();
+//            }
+//        } else {
+//            // ถ้าไม่มี token หรือ header ไม่ถูกต้อง
+//            httpRes.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            httpRes.getWriter().write("{\"error\":\"Authorization header missing or invalid\"}");
+//            httpRes.getWriter().flush();
+//        }
     }
 }

@@ -61,7 +61,7 @@ public class UserController {
     public ResponseEntity<Map<String, String>> getUserProfile(@PathVariable String email) {
         return userService.findByEmail(email)
                 .map(user -> ResponseEntity.ok(Map.of(
-                        "id", user.getId(),
+                        "id", user.getId().toString(),
                         "name", user.getName(),
                         "email", user.getEmail()
                 )))
