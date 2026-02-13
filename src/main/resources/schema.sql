@@ -68,3 +68,16 @@ CREATE TABLE IF NOT EXISTS post_work (
      FOREIGN KEY (Subject_ID) REFERENCES subject(Subject_ID),
      FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+
+CREATE TABLE IF NOT EXISTS verify_user (
+  verify_id CHAR(36) PRIMARY KEY,
+  name             VARCHAR(100)      NOT NULL,
+  email            VARCHAR(254)      NOT NULL,
+  password_hash    VARCHAR(100)      NOT NULL,
+  verification_code VARCHAR(12)      NOT NULL,
+  status           VARCHAR(20)       NOT NULL DEFAULT 'PENDING',
+  requested_at     TIMESTAMPTZ       NOT NULL DEFAULT NOW(),
+  verified_at      TIMESTAMPTZ       NULL,
+  expires_at       TIMESTAMPTZ       NOT NULL,
+  attempts         INT               NOT NULL DEFAULT 0
+);

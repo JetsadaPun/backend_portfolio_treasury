@@ -18,8 +18,7 @@ public class UserService {
 
     // Email pattern สำหรับ validation
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
-            "^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$"
-    );
+            "^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$");
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
@@ -55,6 +54,14 @@ public class UserService {
         // encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
+        // set default role and status
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("USER");
+        }
+        if (user.getStatus() == null || user.getStatus().isEmpty()) {
+            user.setStatus("ACTIVE");
+        }
+
         // save โดย JPA
         User savedUser = userRepository.save(user);
 
@@ -64,8 +71,7 @@ public class UserService {
         response.put("user", Map.of(
                 "id", savedUser.getId(),
                 "name", savedUser.getName(),
-                "email", savedUser.getEmail()
-        ));
+                "email", savedUser.getEmail()));
 
         return response;
     }
@@ -87,18 +93,20 @@ public class UserService {
             User user = userOpt.get();
             if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
                 try {
-                    String token = jwtUtil.generateToken(user.getEmail());
+                    String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
                     user.setTokenId(token);
                     userRepository.save(user);
+
+                    Map<String, Object> userData = new HashMap<>();
+                    userData.put("id", user.getId());
+                    userData.put("name", user.getName());
+                    userData.put("email", user.getEmail());
+                    userData.put("role", user.getRole());
 
                     response.put("token", token);
                     response.put("message", "Login successful");
                     response.put("success", true);
-                    response.put("user", Map.of(
-                            "id", user.getId(),
-                            "name", user.getName(),
-                            "email", user.getEmail()
-                    ));
+                    response.put("user", userData);
                 } catch (Exception e) {
                     response.put("error", "Token generation failed");
                     response.put("success", false);
@@ -140,6 +148,24 @@ public class UserService {
             if (updatedUser.getTokenId() != null) {
                 existingUser.setTokenId(updatedUser.getTokenId());
             }
+            if (updatedUser.getPhone() != null) {
+                existingUser.setPhone(updatedUser.getPhone());
+            }
+            if (updatedUser.getProfileImage() != null) {
+                existingUser.setProfileImage(updatedUser.getProfileImage());
+            }
+            if (updatedUser.getDob() != null) {
+                existingUser.setDob(updatedUser.getDob());
+            }
+            if (updatedUser.getEducation() != null) {
+                existingUser.setEducation(updatedUser.getEducation());
+            }
+            if (updatedUser.getBio() != null) {
+                existingUser.setBio(updatedUser.getBio());
+            }
+            if (updatedUser.getStudentId() != null) {
+                existingUser.setStudentId(updatedUser.getStudentId());
+            }
 
             userRepository.save(existingUser);
 
@@ -151,5 +177,13 @@ public class UserService {
             response.put("success", false);
             return response;
         });
+    }
+
+    public List<User> searchUsersByName(String query) {
+        return userRepository.findByNameContainingIgnoreCase(query);
+    }
+
+    public Optional<User> findByStudentId(String studentId) {
+        return userRepository.findByStudentId(studentId);
     }
 }

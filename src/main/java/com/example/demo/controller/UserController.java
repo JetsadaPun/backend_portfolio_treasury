@@ -6,12 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
+import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "*") // เพิ่มถ้าต้องการให้ frontend เรียกใช้ได้
+@CrossOrigin(origins = "*")
 public class UserController {
 
     private final UserService userService;
@@ -56,15 +58,81 @@ public class UserController {
         }
     }
 
-    // เพิ่ม endpoint สำหรับดู user profile
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
+        }
+        String email = principal.getName();
+        return userService.findByEmail(email)
+                .map(user -> {
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("id", user.getId());
+                    data.put("name", user.getName());
+                    data.put("email", user.getEmail());
+                    data.put("phone", user.getPhone());
+                    data.put("profileImage", user.getProfileImage());
+                    data.put("dob", user.getDob());
+                    data.put("education", user.getEducation());
+                    data.put("bio", user.getBio());
+                    data.put("studentId", user.getStudentId());
+                    data.put("role", user.getRole());
+                    return ResponseEntity.ok(data);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/profile/{email}")
     public ResponseEntity<Map<String, String>> getUserProfile(@PathVariable String email) {
         return userService.findByEmail(email)
                 .map(user -> ResponseEntity.ok(Map.of(
-                        "id", user.getId().toString(),
+                        "id", user.getId(),
                         "name", user.getName(),
-                        "email", user.getEmail()
-                )))
+                        "email", user.getEmail(),
+                        "phone", user.getPhone() != null ? user.getPhone() : "",
+                        "profileImage", user.getProfileImage() != null ? user.getProfileImage() : "",
+                        "dob", user.getDob() != null ? user.getDob() : "",
+                        "education", user.getEducation() != null ? user.getEducation() : "",
+                        "bio", user.getBio() != null ? user.getBio() : "",
+                        "studentId", user.getStudentId() != null ? user.getStudentId() : "")))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(Principal principal, @RequestBody User updatedUser) {
+        if (principal == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "Not authenticated"));
+        }
+        String email = principal.getName();
+        return userService.findByEmail(email)
+                .map(user -> ResponseEntity.ok(userService.updateUser(user.getId(), updatedUser)))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchUsers(@RequestParam String query) {
+        List<User> users = userService.searchUsersByName(query);
+        return ResponseEntity.ok(users.stream().map(user -> Map.of(
+                "id", user.getId(),
+                "name", user.getName(),
+                "email", user.getEmail(),
+                "studentId", user.getStudentId() != null ? user.getStudentId() : "",
+                "profileImage", user.getProfileImage() != null ? user.getProfileImage() : "")).toList());
+    }
+
+    @GetMapping("/{studentId}")
+    public ResponseEntity<?> getUserByStudentId(@PathVariable String studentId) {
+        return userService.findByStudentId(studentId)
+                .map(user -> ResponseEntity.ok(Map.of(
+                        "id", user.getId(),
+                        "name", user.getName(),
+                        "email", user.getEmail(),
+                        "studentId", user.getStudentId() != null ? user.getStudentId() : "",
+                        "phone", user.getPhone() != null ? user.getPhone() : "",
+                        "profileImage", user.getProfileImage() != null ? user.getProfileImage() : "",
+                        "dob", user.getDob() != null ? user.getDob() : "",
+                        "education", user.getEducation() != null ? user.getEducation() : "",
+                        "bio", user.getBio() != null ? user.getBio() : "")))
                 .orElse(ResponseEntity.notFound().build());
     }
 }

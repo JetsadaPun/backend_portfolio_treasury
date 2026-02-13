@@ -9,22 +9,25 @@ public class PostWork {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "post_id")
     private Long postId;
 
+    @Column(name = "subject_id")
     private Integer subjectId;
 
+    @Column(name = "project_name")
     private String projectName;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "project_detail", columnDefinition = "TEXT")
     private String projectDetail;
 
-    @Column(length = 2048)
+    @Column(name = "project_image", length = 2048)
     private String projectImage;
 
-    @Column(length = 2048)
+    @Column(name = "project_link", length = 2048)
     private String projectLink;
 
-    @Column(length = 2048)
+    @Column(name = "project_docs", length = 2048)
     private String projectDocs;
 
     @Column(name = "created_at", nullable = false)
@@ -35,7 +38,8 @@ public class PostWork {
 
     @PrePersist
     protected void onCreate() {
-        if (createdAt == null) createdAt = LocalDateTime.now();
+        if (createdAt == null)
+            createdAt = LocalDateTime.now();
     }
 
     @PreUpdate
@@ -118,7 +122,6 @@ public class PostWork {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-
 
     // Getter and Setter for user
     public User getUser() {

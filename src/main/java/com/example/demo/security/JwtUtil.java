@@ -8,20 +8,21 @@ import org.springframework.stereotype.Component;
 
 import javax.xml.bind.DatatypeConverter;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+// Base64 removed
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
+
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
+    @Value("${jwt.secret:defaultSecretKeyForDevelopmentOnlyDoNotUseInProductionButMustBeHex123456}")
     private String secret;
 
-    @Value("${jwt.expiration}") // 24 hours in seconds
+    @Value("${jwt.expiration:86400}") // Default 24 hours in seconds
     private Long expiration;
 
     // แปลง hex string เป็น byte array
@@ -30,16 +31,35 @@ public class JwtUtil {
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
             data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i+1), 16));
+                    + Character.digit(s.charAt(i + 1), 16));
         }
         return data;
     }
 
     private Key getSigningKey() {
-        byte[] keyBytes = DatatypeConverter.parseHexBinary(secret);
+        byte[] keyBytes;
+        try {
+            // Try parsing as hex first (backward compatibility)
+            keyBytes = DatatypeConverter.parseHexBinary(secret);
+        } catch (Exception e) {
+            // Fallback to plain UTF-8 bytes if not hex
+            keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+        }
 
-        System.out.println("Key Bytes Length: " + keyBytes.length);
-        System.out.println("Base64 Key: " + Base64.getEncoder().encodeToString(keyBytes));
+        // HS256 requires a key of at least 256 bits (32 bytes).
+        // If the secret is too short, we'll use SHA-256 to derive a 32-byte key from
+        // it.
+        if (keyBytes.length < 32) {
+            try {
+                java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-256");
+                keyBytes = md.digest(keyBytes);
+            } catch (java.security.NoSuchAlgorithmException e) {
+                // Fallback padding if SHA-256 is missing (highly unlikely in Java)
+                byte[] padded = new byte[32];
+                System.arraycopy(keyBytes, 0, padded, 0, Math.min(keyBytes.length, 32));
+                keyBytes = padded;
+            }
+        }
 
         return new SecretKeySpec(keyBytes, SignatureAlgorithm.HS256.getJcaName());
     }
@@ -69,11 +89,11 @@ public class JwtUtil {
         }
     }
 
-
-    public String generateToken(String username) {
+    public String generateToken(String username, String role) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
         String token = createToken(claims, username);
-        System.out.println("Generated token for " + username + ": " + token);
+        System.out.println("Generated token for " + username + " with role " + role + ": " + token);
         return token;
     }
 

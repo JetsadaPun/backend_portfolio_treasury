@@ -1,7 +1,6 @@
 package com.example.demo.security;
 
 import com.example.demo.repository.UserRepository;
-import com.example.demo.security.JwtUtil; // ใช้ตัวเดิมของคุณ
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
@@ -15,6 +14,9 @@ public class OauthLoginSuccessHandler implements AuthenticationSuccessHandler {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
 
+    @org.springframework.beans.factory.annotation.Value("${app.frontend.base-url}")
+    private String frontendBaseUrl;
+
     public OauthLoginSuccessHandler(JwtUtil jwtUtil, UserRepository userRepository) {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
@@ -22,12 +24,16 @@ public class OauthLoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
-                                        HttpServletResponse response,
-                                        Authentication authentication) {
+            HttpServletResponse response,
+            Authentication authentication) {
         OAuth2User principal = (OAuth2User) authentication.getPrincipal();
         String email = String.valueOf(principal.getAttributes().get("email")).toLowerCase();
 
-        String token = jwtUtil.generateToken(email);
+        String role = userRepository.findByEmail(email)
+                .map(u -> u.getRole() != null ? u.getRole() : "USER")
+                .orElse("USER");
+
+        String token = jwtUtil.generateToken(email, role);
 
         // เก็บ token_id ตามโมเดลของคุณ
         userRepository.findByEmail(email).ifPresent(u -> {
@@ -37,7 +43,8 @@ public class OauthLoginSuccessHandler implements AuthenticationSuccessHandler {
 
         try {
             // redirect ไปหน้า success (ให้ frontend อ่าน token ต่อ)
-            response.sendRedirect("/oauth-success?token=" + token);
-        } catch (Exception ignored) {}
+            response.sendRedirect(frontendBaseUrl + "/oauth-success?token=" + token);
+        } catch (Exception ignored) {
+        }
     }
 }

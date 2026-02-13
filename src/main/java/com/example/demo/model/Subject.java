@@ -1,5 +1,5 @@
 package com.example.demo.model;
-import jakarta.persistence.*;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -8,12 +8,20 @@ public class Subject {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "subject_id")
     private Long subjectId;
 
-    @Column(nullable = false, unique = true)
-    private String subjectName;
+    @Column(name = "subjectname_th")
+    private String subjectNameTh;
 
+    @Column(name = "subjectname_en")
+    private String subjectNameEn;
+
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
+
+    @Column(name = "subjectname_id", nullable = false, unique = true)
+    private String subjectNameId;
 
     // ===== Getter & Setter =====
 
@@ -25,12 +33,20 @@ public class Subject {
         this.subjectId = subjectId;
     }
 
-    public String getSubjectName() {
-        return subjectName;
+    public String getSubjectNameTh() {
+        return subjectNameTh;
     }
 
-    public void setSubjectName(String subjectName) {
-        this.subjectName = subjectName;
+    public void setSubjectNameTh(String subjectNameTh) {
+        this.subjectNameTh = subjectNameTh;
+    }
+
+    public String getSubjectNameEn() {
+        return subjectNameEn;
+    }
+
+    public void setSubjectNameEn(String subjectNameEn) {
+        this.subjectNameEn = subjectNameEn;
     }
 
     public String getDescription() {
@@ -40,5 +56,12 @@ public class Subject {
     public void setDescription(String description) {
         this.description = description;
     }
-}
 
+    public String getSubjectNameId() {
+        return subjectNameId;
+    }
+
+    public void setSubjectNameId(String subjectNameId) {
+        this.subjectNameId = subjectNameId;
+    }
+}

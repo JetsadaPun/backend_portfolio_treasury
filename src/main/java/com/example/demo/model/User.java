@@ -18,7 +18,7 @@ public class User {
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "user_id", length = 36, updatable = false, nullable = false)
-    private String user_id;
+    private String userId;
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -37,38 +37,142 @@ public class User {
     @Column(length = 10)
     private String status;
 
-    @Column(name = "token_id", length = 20)
-    private String token_id;
+    @Column(name = "token_id", columnDefinition = "TEXT")
+    private String tokenId;
+
+    @Column(name = "student_id", length = 20)
+    private String studentId;
+
+    @Column(length = 20)
+    private String phone;
+
+    @Column(name = "profile_image", columnDefinition = "TEXT")
+    private String profileImage;
+
+    @Column(length = 20)
+    private String dob;
+
+    @Column(columnDefinition = "TEXT")
+    private String education;
+
+    @Column(columnDefinition = "TEXT")
+    private String bio;
 
     // Constructors
-    public User() {}
+    public User() {
+    }
 
     // Getters and Setters
-    public String getId() { return user_id; }
+    public String getUserId() {
+        return userId;
+    }
 
-    public void setId(String id) { this.user_id = id; }
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
-    public String getName() { return name; }
+    // Keep getId/setId if needed for backward compatibility or generic interfaces
+    public String getId() {
+        return userId;
+    }
 
-    public void setName(String name) { this.name = name; }
+    public void setId(String id) {
+        this.userId = id;
+    }
 
-    public String getEmail() { return email; }
+    public String getName() {
+        return name;
+    }
 
-    public void setEmail(String email) { this.email = email; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getPassword() { return password; }
+    public String getEmail() {
+        return email;
+    }
 
-    public void setPassword(String password) { this.password = password; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public String getRole() { return role; }
+    public String getPassword() {
+        return password;
+    }
 
-    public void setRole(String role) { this.role = role; }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-    public String getStatus() { return status; }
+    public String getRole() {
+        return role;
+    }
 
-    public void setStatus(String status) { this.status = status; }
+    public void setRole(String role) {
+        this.role = role;
+    }
 
-    public String getTokenId() { return token_id; }
+    public String getStatus() {
+        return status;
+    }
 
-    public void setTokenId(String tokenId) { this.token_id = tokenId; }
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getTokenId() {
+        return tokenId;
+    }
+
+    public void setTokenId(String tokenId) {
+        this.tokenId = tokenId;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
+
+    public String getEducation() {
+        return education;
+    }
+
+    public void setEducation(String education) {
+        this.education = education;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public String getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
 }
