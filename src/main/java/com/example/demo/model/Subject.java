@@ -1,9 +1,14 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
-@Table(name = "subjects")
+@Table(name = "subject")
 public class Subject {
 
     @Id
@@ -11,17 +16,21 @@ public class Subject {
     @Column(name = "subject_id")
     private Long subjectId;
 
-    @Column(name = "subjectname_th")
+    @Column(name = "Subject_name_thai")
     private String subjectNameTh;
 
-    @Column(name = "subjectname_en")
+    @Column(name = "Subject_Name_eng")
     private String subjectNameEn;
 
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "subjectname_id", nullable = false, unique = true)
+    @Column(name = "Subject_name_id", nullable = false, unique = true)
     private String subjectNameId;
+
+    @Column(name = "properties", columnDefinition = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, Object> properties = new HashMap<>();
 
     // ===== Getter & Setter =====
 
@@ -63,5 +72,13 @@ public class Subject {
 
     public void setSubjectNameId(String subjectNameId) {
         this.subjectNameId = subjectNameId;
+    }
+
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = properties;
     }
 }

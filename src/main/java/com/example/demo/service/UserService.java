@@ -93,7 +93,7 @@ public class UserService {
             User user = userOpt.get();
             if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
                 try {
-                    String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
+                    String token = jwtUtil.generateToken(user.getEmail(), user.getRole(), user.getId(), user.getName());
                     user.setTokenId(token);
                     userRepository.save(user);
 
@@ -185,5 +185,9 @@ public class UserService {
 
     public Optional<User> findByStudentId(String studentId) {
         return userRepository.findByStudentId(studentId);
+    }
+
+    public Optional<User> findById(String userId) {
+        return userRepository.findById(userId);
     }
 }

@@ -25,6 +25,16 @@ public class SubjectService {
         return subjectRepository.findAll();
     }
 
+    public org.springframework.data.domain.Page<Subject> getAllSubjects(
+            org.springframework.data.domain.Pageable pageable) {
+        return subjectRepository.findAll(pageable);
+    }
+
+    public org.springframework.data.domain.Page<Subject> searchSubjects(String keyword,
+            org.springframework.data.domain.Pageable pageable) {
+        return subjectRepository.searchSubjects(keyword, pageable);
+    }
+
     @Transactional
     public void importCSV(java.io.InputStream inputStream) {
         try (java.io.BufferedReader fileReader = new java.io.BufferedReader(

@@ -1,6 +1,7 @@
 package com.example.demo.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class PostWorkResponse {
     private Long postId;
@@ -12,11 +13,21 @@ public class PostWorkResponse {
     private String projectImage;
     private String projectLink;
     private String projectDocs;
+    private List<String> projectImages;
     private String userId;
     private String userName;
+    private String studentId;
     private LocalDateTime createdAt;
 
     // Getters and Setters
+    public String getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
+
     public Long getPostId() {
         return postId;
     }
@@ -111,5 +122,13 @@ public class PostWorkResponse {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<String> getProjectImages() {
+        return projectImages;
+    }
+
+    public void setProjectImages(List<String> projectImages) {
+        this.projectImages = projectImages;
     }
 }

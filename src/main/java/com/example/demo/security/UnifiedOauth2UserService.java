@@ -17,7 +17,7 @@ public class UnifiedOauth2UserService extends DefaultOAuth2UserService {
     private final PasswordEncoder passwordEncoder;
 
     public UnifiedOauth2UserService(UserRepository userRepository,
-                                    PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -31,16 +31,14 @@ public class UnifiedOauth2UserService extends DefaultOAuth2UserService {
 
         // ดึง email/name ตาม provider
         String email = null;
-        String name  = null;
-
-        final String finalName = name;
+        String name = null;
 
         if ("google".equals(provider)) {
             email = (String) attrs.get("email");
-            name  = (String) attrs.getOrDefault("name", email);
+            name = (String) attrs.getOrDefault("name", email);
         } else if ("facebook".equals(provider)) {
             email = (String) attrs.get("email");
-            name  = (String) attrs.getOrDefault("name", email);
+            name = (String) attrs.getOrDefault("name", email);
         }
 
         if (email == null || email.isBlank()) {
@@ -48,20 +46,21 @@ public class UnifiedOauth2UserService extends DefaultOAuth2UserService {
         }
 
         final String normalized = email.trim().toLowerCase();
+        final String resolvedName = name;
 
         // upsert ผู้ใช้ในระบบคุณ
         userRepository.findByEmail(normalized).ifPresentOrElse(existing -> {
-            if (finalName != null && !finalName.equals(existing.getName())) {
-                existing.setName(finalName);
+            if (resolvedName != null && !resolvedName.equals(existing.getName()) && !"null".equals(resolvedName)) {
+                existing.setName(resolvedName);
                 userRepository.save(existing);
             }
         }, () -> {
             User u = new User();
             u.setEmail(normalized);
-            u.setName(finalName != null ? finalName : normalized);
-            u.setPassword(passwordEncoder.encode("oauth:" + normalized));
-            u.setStatus("active");
-            if (u.getRole() == null) u.setRole("USER");
+            u.setName(resolvedName != null && !"null".equals(resolvedName) ? resolvedName : normalized);
+            u.setPassword(passwordEncoder.encode("oauth:" + java.util.UUID.randomUUID().toString()));
+            u.setStatus("ACTIVE");
+            u.setRole("USER");
             userRepository.save(u);
         });
 

@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS Subject (
     Subject_ID INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     Subject_name_thai VARCHAR(100),
     Subject_Name_eng VARCHAR(100),
+    Subject_name_id VARCHAR(20) UNIQUE,
     Year INT,
     Type_Subject VARCHAR(100),
     Day_Update VARCHAR(100)

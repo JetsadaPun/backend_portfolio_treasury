@@ -20,11 +20,21 @@ public class PostWorkController {
         this.postWorkService = postWorkService;
     }
 
-    @PostMapping
-    public ResponseEntity<?> createPost(@Valid @RequestBody PostWorkRequest request) {
-        PostWork saved = postWorkService.createPost(request);
+    @PostMapping(consumes = { "multipart/form-data" })
+    public ResponseEntity<?> createPost(
+            @RequestPart("data") @Valid PostWorkRequest request,
+            @RequestPart(value = "images", required = false) org.springframework.web.multipart.MultipartFile[] images,
+            @RequestPart(value = "document", required = false) org.springframework.web.multipart.MultipartFile document) {
+
+        PostWork saved = postWorkService.createPostWithImages(request, images, document);
+
         return ResponseEntity.status(201).body(
-                java.util.Map.of("postId", saved.getPostId(), "message", "Created"));
+                java.util.Map.of("postId", saved.getPostId(), "message", "Created with files"));
+    }
+
+    @GetMapping("/{postId}")
+    public ResponseEntity<?> getPostById(@PathVariable Long postId) {
+        return ResponseEntity.ok(postWorkService.getPostById(postId));
     }
 
     @PutMapping("/{postId}")

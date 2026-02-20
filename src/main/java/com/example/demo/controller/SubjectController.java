@@ -34,11 +34,22 @@ public class SubjectController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllSubjects() {
+    public ResponseEntity<?> getAllSubjects(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String search) {
         try {
+            if (page != null && size != null) {
+                org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page,
+                        size);
+                if (search != null && !search.trim().isEmpty()) {
+                    return ResponseEntity.ok(subjectService.searchSubjects(search.trim(), pageable));
+                }
+                return ResponseEntity.ok(subjectService.getAllSubjects(pageable));
+            }
             return ResponseEntity.ok(subjectService.getAllSubjects());
         } catch (Exception e) {
-            e.printStackTrace(); // Print stack trace to see why it fails
+            e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
         }
     }

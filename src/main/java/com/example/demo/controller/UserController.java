@@ -120,19 +120,26 @@ public class UserController {
                 "profileImage", user.getProfileImage() != null ? user.getProfileImage() : "")).toList());
     }
 
-    @GetMapping("/{studentId}")
-    public ResponseEntity<?> getUserByStudentId(@PathVariable String studentId) {
-        return userService.findByStudentId(studentId)
-                .map(user -> ResponseEntity.ok(Map.of(
-                        "id", user.getId(),
-                        "name", user.getName(),
-                        "email", user.getEmail(),
-                        "studentId", user.getStudentId() != null ? user.getStudentId() : "",
-                        "phone", user.getPhone() != null ? user.getPhone() : "",
-                        "profileImage", user.getProfileImage() != null ? user.getProfileImage() : "",
-                        "dob", user.getDob() != null ? user.getDob() : "",
-                        "education", user.getEducation() != null ? user.getEducation() : "",
-                        "bio", user.getBio() != null ? user.getBio() : "")))
+    @GetMapping("/{idOrStudentId}")
+    public ResponseEntity<?> getUserByIdOrStudentId(@PathVariable String idOrStudentId) {
+        // Try finding by studentId first
+        var userOpt = userService.findByStudentId(idOrStudentId);
+
+        // If not found, try finding by userId (UUID)
+        if (userOpt.isEmpty()) {
+            userOpt = userService.findById(idOrStudentId);
+        }
+
+        return userOpt.map(user -> ResponseEntity.ok(Map.of(
+                "id", user.getId(),
+                "name", user.getName(),
+                "email", user.getEmail(),
+                "studentId", user.getStudentId() != null ? user.getStudentId() : "",
+                "phone", user.getPhone() != null ? user.getPhone() : "",
+                "profileImage", user.getProfileImage() != null ? user.getProfileImage() : "",
+                "dob", user.getDob() != null ? user.getDob() : "",
+                "education", user.getEducation() != null ? user.getEducation() : "",
+                "bio", user.getBio() != null ? user.getBio() : "")))
                 .orElse(ResponseEntity.notFound().build());
     }
 }

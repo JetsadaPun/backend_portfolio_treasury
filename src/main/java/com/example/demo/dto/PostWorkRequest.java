@@ -3,12 +3,15 @@ package com.example.demo.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.util.List;
+
 public class PostWorkRequest {
 
     @NotNull
-    private Integer subjectId;
+    private Long subjectId;
 
-    @NotBlank @Size(max = 255)
+    @NotBlank
+    @Size(max = 255)
     private String projectName;
 
     @NotBlank
@@ -24,15 +27,25 @@ public class PostWorkRequest {
     private String projectDocs;
 
     @NotBlank
-    private String userId;  // เพิ่มตรงนี้
+    private String userId;
+
+    private List<String> projectImages;
+
+    public List<String> getProjectImages() {
+        return projectImages;
+    }
+
+    public void setProjectImages(List<String> projectImages) {
+        this.projectImages = projectImages;
+    }
 
     // getters และ setters สำหรับทุก field รวมถึง userId
 
-    public Integer getSubjectId() {
+    public Long getSubjectId() {
         return subjectId;
     }
 
-    public void setSubjectId(Integer subjectId) {
+    public void setSubjectId(Long subjectId) {
         this.subjectId = subjectId;
     }
 

@@ -29,22 +29,18 @@ public class OauthLoginSuccessHandler implements AuthenticationSuccessHandler {
         OAuth2User principal = (OAuth2User) authentication.getPrincipal();
         String email = String.valueOf(principal.getAttributes().get("email")).toLowerCase();
 
-        String role = userRepository.findByEmail(email)
-                .map(u -> u.getRole() != null ? u.getRole() : "USER")
-                .orElse("USER");
+        userRepository.findByEmail(email).ifPresent(user -> {
+            String role = user.getRole() != null ? user.getRole() : "USER";
+            String token = jwtUtil.generateToken(email, role, user.getUserId(), user.getName());
 
-        String token = jwtUtil.generateToken(email, role);
+            user.setTokenId(token);
+            userRepository.save(user);
 
-        // เก็บ token_id ตามโมเดลของคุณ
-        userRepository.findByEmail(email).ifPresent(u -> {
-            u.setTokenId(token);
-            userRepository.save(u);
+            try {
+                response.sendRedirect(frontendBaseUrl + "/oauth-success?token=" + token);
+            } catch (Exception e) {
+                System.err.println("Error redirecting after OAuth success: " + e.getMessage());
+            }
         });
-
-        try {
-            // redirect ไปหน้า success (ให้ frontend อ่าน token ต่อ)
-            response.sendRedirect(frontendBaseUrl + "/oauth-success?token=" + token);
-        } catch (Exception ignored) {
-        }
     }
 }

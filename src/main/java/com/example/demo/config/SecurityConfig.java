@@ -32,6 +32,7 @@ public class SecurityConfig {
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 http
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                                 .csrf(csrf -> csrf.disable())
                                 .sessionManagement(
                                                 sess -> sess.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
@@ -46,14 +47,19 @@ public class SecurityConfig {
                                                                 "/api/register/verify",
                                                                 "/api/users/register",
                                                                 "/api/users/login",
+                                                                "/api/users/search",
+                                                                "/api/users/profile/**",
+                                                                "/api/users/*",
                                                                 "/api/subjects",
                                                                 "/api/subjects/**",
                                                                 "/api/posts/**",
+                                                                "/api/actions/**",
                                                                 "/oauth-success",
                                                                 "/oauth2/authorization/**",
                                                                 "/login/oauth2/**",
                                                                 "/error",
                                                                 "/public/**",
+                                                                "/uploads/**",
                                                                 "/actuator/health")
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/api/subjects/import-csv")
@@ -68,5 +74,17 @@ public class SecurityConfig {
                 // เพิ่ม JWT filter ข้างหน้า UsernamePasswordAuthenticationFilter
                 http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
                 return http.build();
+        }
+
+        @Bean
+        public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+                org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
+                configuration.setAllowedOrigins(java.util.List.of("http://localhost:3000"));
+                configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+                configuration.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type", "X-Requested-With"));
+                configuration.setAllowCredentials(true);
+                org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+                source.registerCorsConfiguration("/**", configuration);
+                return source;
         }
 }

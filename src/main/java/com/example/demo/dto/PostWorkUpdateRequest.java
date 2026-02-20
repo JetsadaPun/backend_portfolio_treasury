@@ -3,7 +3,7 @@ package com.example.demo.dto;
 import jakarta.validation.constraints.Size;
 
 public class PostWorkUpdateRequest {
-    private Integer subjectId;
+    private Long subjectId;
 
     @Size(max = 255)
     private String projectName;
@@ -23,18 +23,59 @@ public class PostWorkUpdateRequest {
     private String userId;
 
     // getters/setters...
-    public Integer getSubjectId() { return subjectId; }
-    public void setSubjectId(Integer subjectId) { this.subjectId = subjectId; }
-    public String getProjectName() { return projectName; }
-    public void setProjectName(String projectName) { this.projectName = projectName; }
-    public String getProjectDetail() { return projectDetail; }
-    public void setProjectDetail(String projectDetail) { this.projectDetail = projectDetail; }
-    public String getProjectImage() { return projectImage; }
-    public void setProjectImage(String projectImage) { this.projectImage = projectImage; }
-    public String getProjectLink() { return projectLink; }
-    public void setProjectLink(String projectLink) { this.projectLink = projectLink; }
-    public String getProjectDocs() { return projectDocs; }
-    public void setProjectDocs(String projectDocs) { this.projectDocs = projectDocs; }
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
+    public Long getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(Long subjectId) {
+        this.subjectId = subjectId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public String getProjectDetail() {
+        return projectDetail;
+    }
+
+    public void setProjectDetail(String projectDetail) {
+        this.projectDetail = projectDetail;
+    }
+
+    public String getProjectImage() {
+        return projectImage;
+    }
+
+    public void setProjectImage(String projectImage) {
+        this.projectImage = projectImage;
+    }
+
+    public String getProjectLink() {
+        return projectLink;
+    }
+
+    public void setProjectLink(String projectLink) {
+        this.projectLink = projectLink;
+    }
+
+    public String getProjectDocs() {
+        return projectDocs;
+    }
+
+    public void setProjectDocs(String projectDocs) {
+        this.projectDocs = projectDocs;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 }

@@ -89,9 +89,11 @@ public class JwtUtil {
         }
     }
 
-    public String generateToken(String username, String role) {
+    public String generateToken(String username, String role, String userId, String name) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role);
+        claims.put("userId", userId);
+        claims.put("name", name);
         String token = createToken(claims, username);
         System.out.println("Generated token for " + username + " with role " + role + ": " + token);
         return token;

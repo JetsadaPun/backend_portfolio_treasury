@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.CommentRequest;
+import com.example.demo.dto.LikeRequest;
 import com.example.demo.model.ActionPost;
 import com.example.demo.service.ActionPostService;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +31,24 @@ public class ActionPostController {
     @GetMapping("/comments/{postId}")
     public ResponseEntity<List<ActionPost>> getComments(@PathVariable Long postId) {
         return ResponseEntity.ok(actionPostService.getCommentsByPost(postId));
+    }
+
+    // จัดการการไลค์ (ย้อนกลับได้)
+    @PostMapping("/like")
+    public ResponseEntity<Void> toggleLike(@Valid @RequestBody LikeRequest request) {
+        actionPostService.toggleLike(request);
+        return ResponseEntity.ok().build();
+    }
+
+    // ดูจำนวนไลค์
+    @GetMapping("/like/count/{postId}")
+    public ResponseEntity<Long> getLikeCount(@PathVariable Long postId) {
+        return ResponseEntity.ok(actionPostService.getLikeCount(postId));
+    }
+
+    // เช็คว่าผู้ใช้ไลค์หรือยัง
+    @GetMapping("/like/status/{postId}")
+    public ResponseEntity<Boolean> getLikeStatus(@PathVariable Long postId, @RequestParam String userId) {
+        return ResponseEntity.ok(actionPostService.isLikedByUser(postId, userId));
     }
 }

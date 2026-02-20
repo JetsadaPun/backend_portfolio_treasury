@@ -1,18 +1,13 @@
 package com.example.demo.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class CommentRequest {
+public class LikeRequest {
     @NotNull
     private Long postId;
 
-    @NotBlank
-    private String content;
-
     private String userId;
     private String userName;
-    private Long parentId;
 
     // getter & setter
     public Long getPostId() {
@@ -21,14 +16,6 @@ public class CommentRequest {
 
     public void setPostId(Long postId) {
         this.postId = postId;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
 
     public String getUserId() {
@@ -45,13 +32,5 @@ public class CommentRequest {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
     }
 }
